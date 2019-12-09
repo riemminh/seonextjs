@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+// bring routes
+const blogRoutes = require("./routes/blog");
 require("dotenv").config();
 
 // app
@@ -16,8 +18,13 @@ app.use(cookieParser());
 
 // db
 mongoose
-  .connect(process.env.DATABASE, { useNewUrlParser: true })
-  .then(() => {})
+  .connect(process.env.DATABASE_LOCAL, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log("DB connected"))
   .catch(err => console.log(err));
 
 //cors
@@ -26,9 +33,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // routes
-app.get("/api", (req, res) => {
-  res.json({ time: Date().toString() });
-});
+app.use("/api", blogRoutes);
 
 // port
 const port = process.env.PORT || 8000;
