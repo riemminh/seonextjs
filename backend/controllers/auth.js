@@ -1,5 +1,8 @@
 const User = require("../model/user");
 const shortId = require("shortid");
+const jwt = require("jsonwebtoken");
+const expressJwt = require("express-jwt");
+require("dotenv").config();
 
 exports.signup = (req, res) => {
   User.findOne({ email: req.body.email }).exec((err, user) => {
@@ -23,3 +26,42 @@ exports.signup = (req, res) => {
     });
   });
 };
+exports.signin = (req, res) => {
+  const { email, password } = req.body;
+  // check if user exist
+  User.findOne({ email: email }).exec((err, user) => {
+    if (err || !user) {
+      return res
+        .status(400)
+        .json({ error: "User with that email not exist. Please sigup" });
+    }
+    // authenticate
+    if (!user.authenticate(password)) {
+      return res.status(400).json({
+        error: "Email and password do not match."
+      });
+    }
+    // generate a token and send to client
+
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d"
+    });
+
+    res.cookie("token", token, { expiresIn: "1d" });
+    const { _id, username, name, email, role } = user;
+    return res.json({
+      token,
+      user: { _id, username, name, email, role }
+    });
+  });
+  // authenticate
+};
+
+exports.singout = (req, res) => {
+  res.clearCookie("token");
+  res.json({
+    message: "Signout success"
+  });
+};
+
+exports.requireSingin = expressJwt({ secret: process.env.JWT_SECRET });
