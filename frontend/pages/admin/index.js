@@ -1,9 +1,12 @@
 import Layout from "../../components/Layout";
+import Admin from "../../components/auth/Admin";
 
-const Admin = () => (
+const AdminIndex = () => (
   <Layout>
-    <h1>Admin Page</h1>
+    <Admin>
+      <h1>Admin Dashboard</h1>
+    </Admin>
   </Layout>
 );
 
-export default Admin;
+export default AdminIndex;
