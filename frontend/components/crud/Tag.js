@@ -1,79 +1,69 @@
-import { useState, useEffect, Fragment } from "react";
-import { create, getCategories, removeCategory } from "../actions/category";
+import { Fragment, useState, useEffect } from "react";
+import { create, getTags, removeTag } from "../actions/tags";
 
-const Category = () => {
+const Tag = () => {
   const [values, setValues] = useState({
     name: "",
-    error: false,
-    success: false,
-    categories: [],
+    error: "",
+    messgae: "",
     removed: false,
-    message: "",
-    reload: false
+    tags: [],
+    reload: false,
+    success: false
   });
-  const { name, categories, error, success, removed, reload, message } = values;
+  const { name, error, message, reload, removed, tags, success } = values;
   useEffect(() => {
-    loadCategories();
+    loadTags();
   }, [reload]);
-
-  const loadCategories = () => {
-    getCategories()
-      .then(res => {
-        setValues({ ...values, categories: res });
-      })
-      .catch(err => {
-        if (err && err.response) {
-          console.log(err.response.data);
-        }
-      });
-  };
-
   const handleChange = e => {
     setValues({
       ...values,
       [e.target.name]: e.target.value,
-      success: false,
       error: false,
-      message: ""
+      messgae: "",
+      success: false
     });
   };
-
+  const loadTags = () => {
+    getTags()
+      .then(res => {
+        setValues({ ...values, tags: res });
+      })
+      .catch(err => console.log(err));
+  };
   const handleSubmit = e => {
     e.preventDefault();
-    const category = {
+    const tag = {
       name: name
     };
-
-    create(category)
+    create(tag)
       .then(res => {
-        setValues({ ...values, success: true, name: "", reload: !reload });
+        console.log(res);
+        setValues({ ...values, reload: !reload, success: true, name: "" });
       })
       .catch(err => {
         if (err && err.response) {
           setValues({
             ...values,
-            success: false,
-            message: err.response.data.error,
-            error: true
+            error: true,
+            message: err.response.data.error
           });
         }
       });
+    console.log(tag);
   };
-
   const deleteConfirm = slug => {
-    let answer = window.confirm(
-      `Are you sure you want to delete this category?`
-    );
+    let answer = window.confirm(`Are you sure you want to delete this tag?`);
     if (answer) {
       deleteCategory(slug);
     }
   };
   const deleteCategory = slug => {
-    removeCategory(slug)
+    removeTag(slug)
       .then(() => {
         setValues({
           ...values,
-          error: false,
+          error: true,
           success: false,
           name: "",
           removed: !removed,
@@ -83,7 +73,7 @@ const Category = () => {
       .catch(err => console.log(err));
   };
   const showCategories = () => {
-    return categories.map((c, i) => {
+    return tags.map((c, i) => {
       return (
         <button
           onDoubleClick={() => deleteConfirm(c.slug)}
@@ -95,28 +85,6 @@ const Category = () => {
         </button>
       );
     });
-  };
-  const showError = () => {
-    if (error) {
-      return (
-        <p className="text-danger">
-          {message ===
-          "11000 duplicate key error collection: seoblog.categories index: slug already exists"
-            ? "Category is exits"
-            : message}
-        </p>
-      );
-    }
-  };
-  const showSuccess = () => {
-    if (success) {
-      return <p className="text-success">Category is created</p>;
-    }
-  };
-  const showRemoved = () => {
-    if (removed) {
-      return <p className="text-danger">Category is removed</p>;
-    }
   };
   const newCategoryFom = () => (
     <form onSubmit={handleSubmit}>
@@ -137,17 +105,40 @@ const Category = () => {
       </div>
     </form>
   );
-  const mouseMoveHandler = () => {
+  const showError = () => {
+    if (error) {
+      return (
+        <p className="text-danger">
+          {message ===
+          "11000 duplicate key error collection: seoblog.categories index: slug already exists"
+            ? "Category is exits"
+            : message}
+        </p>
+      );
+    }
+  };
+  const showSuccess = () => {
+    if (success) {
+      return <p className="text-success">Category is created</p>;
+    }
+  };
+  const showRemoved = () => {
+    if (removed) {
+      return <p className="text-danger">Tag is removed</p>;
+    }
+  };
+  const mouseMoveHandler = e => {
     setValues({
       ...values,
       error: false,
       success: false,
+      message: "",
       removed: false
     });
   };
   return (
     <Fragment>
-      <h2>Category</h2>
+      <h2>Tag</h2>
       {showRemoved()}
       {showSuccess()}
       {showError()}
@@ -159,4 +150,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Tag;

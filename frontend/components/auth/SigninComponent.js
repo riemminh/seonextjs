@@ -35,7 +35,12 @@ const SigninComponent = () => {
           }
         });
       })
-      .catch(err => setValues({ ...values, error: err.response.data.error }));
+      .catch(err => {
+        console.log(err);
+        if (err && err.response) {
+          setValues({ ...values, error: err.response.data.error });
+        }
+      });
   };
 
   const ErrorCpn = () => (

@@ -1,7 +1,6 @@
 import { Fragment, useEffect } from "react";
 import { isAuth } from "../actions/auth";
-import {} from "";
-import { Router } from "next/router";
+import Router from "next/router";
 
 const Private = ({ children }) => {
   useEffect(() => {
@@ -11,3 +10,5 @@ const Private = ({ children }) => {
   }, []);
   return <Fragment>{children}</Fragment>;
 };
+
+export default Private;

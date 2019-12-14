@@ -33,7 +33,11 @@ const SignupComponent = () => {
       .then(res => {
         setValues({ ...values, showForm: false, message: res.data.message });
       })
-      .catch(err => setValues({ ...values, error: err.response.data.error }));
+      .catch(err => {
+        if (err && err.response) {
+          setValues({ ...values, error: err.response.data.error });
+        }
+      });
   };
   const MessageCpn = () => (
     <div className="alert alert-success" role="alert">

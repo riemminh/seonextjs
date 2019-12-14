@@ -3,11 +3,11 @@ import { API } from "../../config";
 import cookie from "js-cookie";
 
 export const signup = user => {
-  return axios.post(`${API}/api/signup`, user);
+  return axios.post(`${API}/signup`, user);
 };
 
 export const signin = user => {
-  return axios.post(`${API}/api/signin`, user);
+  return axios.post(`${API}/signin`, user);
 };
 
 export const singout = next => {
@@ -68,11 +68,21 @@ export const isAuth = () => {
   if (process.browser) {
     const cookieChecked = getCookie("token");
     if (cookieChecked) {
+      setAuthToken(cookieChecked);
       if (localStorage.getItem("user")) {
         return JSON.parse(localStorage.getItem("user"));
       } else {
         return false;
       }
     }
+  }
+};
+const setAuthToken = token => {
+  if (token) {
+    // Apply to every request
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    // Delete auth header
+    delete axios.defaults.headers.common["Authorization"];
   }
 };

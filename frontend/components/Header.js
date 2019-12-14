@@ -25,7 +25,6 @@ const Header = props => {
       NProgress.done();
     });
     Router.events.on("routeChangeError", url => {
-      console.log("error");
       NProgress.done();
     });
   }, []);
